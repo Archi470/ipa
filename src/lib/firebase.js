@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8ScPmu6Zv17DFCha9r_H3sLolIQjjajk",
@@ -20,3 +22,17 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 export { auth, db, storage };
+
+
+
+// ✅ Function to save extracted details to Firestore
+export async function saveInvoiceData(invoice_no, emp_name) {
+  try {
+    const docRef = doc(db, "invoices", invoice_no); // Store by invoice_no
+    await setDoc(docRef, { invoice_no, emp_name, timestamp: new Date() });
+
+    console.log("Data saved to Firebase successfully.");
+  } catch (error) {
+    console.error("Error saving to Firebase:", error);
+  }
+}

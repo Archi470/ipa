@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { generateText } from "@/lib/googleAI"; // ✅ Correct import path
+import { extractDetailsFromPrompt } from "@/lib/googleAI"; // ✅ Import AI function
+import { saveInvoiceData } from "@/lib/firebase"; // ✅ Import Firebase function
 
 export default function Dashboard() {
   const [prompt, setPrompt] = useState("");
@@ -14,11 +15,17 @@ export default function Dashboard() {
     setResponse("");
 
     try {
-      const result = await generateText(prompt);
-      setResponse(result);
+      const extractedData = await extractDetailsFromPrompt(prompt);
+      
+      if (extractedData && extractedData.invoice_no && extractedData.emp_name) {
+        await saveInvoiceData(extractedData.invoice_no, extractedData.emp_name);
+        setResponse(`Saved: Invoice No: ${extractedData.invoice_no}, Employee: ${extractedData.emp_name}`);
+      } else {
+        setResponse("⚠️ Could not extract details. Please check your input.");
+      }
     } catch (error) {
-      setResponse("Error generating response.");
-      console.error("Gemini API Error:", error);
+      setResponse("⚠️ Error processing request.");
+      console.error("Processing error:", error);
     }
 
     setLoading(false);
@@ -26,23 +33,23 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
-      <h1>Welcome to the Dashboard</h1>
+      <h1>Extract Invoice Details</h1>
 
       <textarea
         rows="4"
-        placeholder="Enter your prompt..."
+        placeholder="Enter text containing Invoice No & Employee Name..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         style={{ width: "100%", padding: "10px", fontSize: "16px" }}
       />
 
       <button onClick={handleGenerate} disabled={loading} style={{ marginTop: "10px" }}>
-        {loading ? "Generating..." : "Generate Response"}
+        {loading ? "Extracting..." : "Extract & Save"}
       </button>
 
       {response && (
         <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}>
-          <strong>AI Response:</strong>
+          <strong>Result:</strong>
           <p>{response}</p>
         </div>
       )}
