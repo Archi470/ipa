@@ -1,20 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
-
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-
 const firebaseConfig = {
-  apiKey: "AIzaSyD8ScPmu6Zv17DFCha9r_H3sLolIQjjajk",
-  authDomain: "ggh-ipa.firebaseapp.com",
-  projectId: "ggh-ipa",
-  storageBucket: "ggh-ipa.firebasestorage.app",
-  messagingSenderId: "233304346865",
-  appId: "1:233304346865:web:5fdfb3146f830b61299950",
-  measurementId: "G-6LBJS4KL4P"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
-
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -22,8 +19,6 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 export { auth, db, storage };
-
-
 
 // ✅ Function to save extracted details to Firestore
 export async function saveInvoiceData(invoice_no, emp_name) {
